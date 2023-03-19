@@ -1,0 +1,35 @@
+# https://doc.traefik.io/traefik/user-guides/docker-compose/basic-example/
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.9.8"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+# https://developer.hashicorp.com/consul/tutorials/docker/docker-compose-datacenter:
+  consul-server:
+    image: hashicorp/consul:1.15.1
+    container_name: consul-server
+    restart: always
+    volumes:
+      - ./consul.json:/consul/config/server.json:ro
+      - ./data/:/consul/data
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    command: "agent -bootstrap-expect=1"

@@ -1,0 +1,19 @@
+version: "3.3"
+
+services:
+
+  whoami:
+    image: "traefik/whoami:{{ key "whoami/version" }}"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
+  blog:
+    image: "caddy:{{ keyOrDefault "caddy/version" "2.6.4" }}"
+    container_name: "blog-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`blog.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
